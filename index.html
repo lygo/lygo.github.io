@@ -1,1 +1,38 @@
-<center><h1>LYGO - lazy yoga gophers</h1></center>
+<center>
+	<h1>LYGO - lazy yoga gophers</h1>
+</center>
+<div style="margin: 100 200;">
+<pre>
+package main
+
+import (
+	"fmt"
+)
+
+func f(left chan<- int, right <-chan int) {
+	left <- 1 + <-right
+}
+
+func main() {
+	const n = 10000
+	var right chan int		
+
+	leftmost := make(chan int)
+	
+	left := leftmost    
+	
+	/*  equivalent to: 
+	  var left chan int
+	  left = leftmost
+	*/
+		
+	for i := 0; i < n; i++ {
+		right = make(chan int)
+		go f(left, right)
+		left = right
+	}
+	go func(c chan<- int) { c <- 1 }(right)
+	fmt.Println(<-leftmost)
+}
+</pre>
+</div>
